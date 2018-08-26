@@ -430,6 +430,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (add-hook 'c-mode-common-hook 'google-set-c-style)
   (add-hook 'c-mode-common-hook 'google-make-newline-indent)
 
+  ;; VTL-syntax heighlighting
   (load-file "~/.spacemacs.d/vtl.el")
   (require 'vtl)
   (setq auto-mode-alist (append '(("\\.vm$" . vtl-mode))
