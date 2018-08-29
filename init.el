@@ -54,7 +54,6 @@ values."
      ;; markdown
      org
      (shell :variables
-            shell-default-shell 'eshell
             shell-default-height 30
             shell-default-position 'bottom)
      ;; spell-yhecking
@@ -435,7 +434,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (require 'vtl)
   (setq auto-mode-alist (append '(("\\.vm$" . vtl-mode))
                                 auto-mode-alist))
+
   )
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
