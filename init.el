@@ -54,8 +54,7 @@ values."
      ;; markdown
      org
      (shell :variables
-            shell-default-height 30
-            shell-default-position 'bottom)
+            shell-default-shell 'eshell)
      ;; spell-yhecking
      syntax-checking
      ;; version-control
@@ -435,7 +434,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq auto-mode-alist (append '(("\\.vm$" . vtl-mode))
                                 auto-mode-alist))
 
-  )
+
+  ;; bash profile
+  (setenv "AWS_ACCOUNTID" "037641059503")
+)
 
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -445,13 +447,19 @@ before packages are loaded. If you are unsure, you should try in setting them in
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(compilation-read-command nil)
  '(compile-command
    "make -C /Users/knowledge/Developer/PhD/FESR/build/ -j4 default_target")
  '(org-agenda-files (quote ("~/todo.org")))
  '(package-selected-packages
    (quote
-    (reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl graphql-mode ein request-deferred deferred wolfram-mode tide typescript-mode yasnippet-snippets indium websocket seq company-auctex auctex-latexmk auctex solidity-mode yaml-mode google-c-style org-mime helm-spotify-plus phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode ranger web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data emoji-cheat-sheet-plus company-emoji fasd helm-dash dash-at-point csv-mode spotify helm-spotify multi yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic mmm-mode markdown-toc markdown-mode gh-md xterm-color smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download multi-term magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub let-alist with-editor eshell-z eshell-prompt-extras esh-help web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode flycheck-pos-tip pos-tip flycheck org-plus-contrib helm-company helm-c-yasnippet company-statistics company-c-headers auto-yasnippet ac-ispell fuzzy company yasnippet auto-complete disaster cmake-mode clang-format ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
- '(safe-local-variable-values (quote ((helm-make-build-dir . "build/")))))
+    (treepy graphql reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl graphql-mode ein request-deferred deferred wolfram-mode tide typescript-mode yasnippet-snippets indium websocket seq company-auctex auctex-latexmk auctex solidity-mode yaml-mode google-c-style org-mime helm-spotify-plus phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode ranger web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data emoji-cheat-sheet-plus company-emoji fasd helm-dash dash-at-point csv-mode spotify helm-spotify multi yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic mmm-mode markdown-toc markdown-mode gh-md xterm-color smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download multi-term magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub let-alist with-editor eshell-z eshell-prompt-extras esh-help web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode flycheck-pos-tip pos-tip flycheck org-plus-contrib helm-company helm-c-yasnippet company-statistics company-c-headers auto-yasnippet ac-ispell fuzzy company yasnippet auto-complete disaster cmake-mode clang-format ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+ '(safe-local-variable-values
+   (quote
+    ((projectile-project-run-cmd . "./build/FESR")
+     (projectile-project-run-cmd . "~/Developer/PhD/FESR/build/FESR")
+     (projectile-run-project . "~/Developer/PhD/FESR/build/FESR")
+     (helm-make-build-dir . "build/")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
