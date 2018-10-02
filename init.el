@@ -436,7 +436,23 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 
   ;; bash profile
-  (setenv "AWS_ACCOUNTID" "037641059503")
+  ;; AWS_ACCOUNTID
+  (let ((aws_account_id (shell-command-to-string ". ~/.bash_profile; echo -n $AWS_ACCOUNTID")))
+    (setenv "AWS_ACCOUNTID" aws_account_id))
+
+  ;; c indenting
+  (c-add-style "work"
+               '((indent-tabs-mode . nil)
+                 (c-basic-offset . 4)
+                 (c-offsets-alist
+                  (substatement-open . 0)
+                  (case-label . +)
+                  (inline-open . 0)
+                  (block-open . -)
+                  (statement-cont . +)
+                  (inextern-lang . 0)
+                  (innamespace . 0)
+                  (arglist-close . 0))))
 )
 
 
