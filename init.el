@@ -453,11 +453,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; EMOJI
   (add-hook 'js-mode-hook 'emoji-cheat-sheet-plus-display-mode)
 
-
-  ;; C++ Google Style
-  (add-hook 'c-mode-common-hook 'google-set-c-style)
-  (add-hook 'c-mode-common-hook 'google-make-newline-indent)
-
   ;; VTL-syntax heighlighting
   (load-file "~/.spacemacs.d/vtl.el")
   (require 'vtl)
@@ -473,7 +468,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; c indenting
   (c-add-style "work"
                '((indent-tabs-mode . nil)
-                 (c-basic-offset . 4)
+                 (c-basic-offset . 2)
                  (c-offsets-alist
                   (substatement-open . 0)
                   (case-label . +)
@@ -482,7 +477,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
                   (statement-cont . +)
                   (inextern-lang . 0)
                   (innamespace . 0)
-                  (arglist-close . 0))))
+                  (arglist-close . 0)
+                  (topmost-iktro-cont . +))))
+  (setq c-default-style "work")
 )
 
 
@@ -508,7 +505,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
      (helm-make-build-dir . "build/")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
+
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
