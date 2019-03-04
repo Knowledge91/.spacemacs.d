@@ -31,6 +31,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     bibtex
+     docker
      octave
      typescript
      yaml
@@ -40,6 +42,7 @@ values."
      python
      markdown
      javascript
+     java
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -53,8 +56,7 @@ values."
      git
      ;; markdown
      org
-     (shell :variables
-            shell-default-shell 'eshell)
+     (shell :variables shell-default-height 40 shell-default-shell 'multi-term)
      ;; spell-yhecking
      syntax-checking
      ;; version-control
@@ -70,19 +72,14 @@ values."
             latex-build-command "LaTeX"
             latex-enable-auto-fill t)
      theming
+     typescript
+     ipython-notebook
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(
-                                      solidity-mode
-                                      ein
-                                      graphql-mode
-                                      google-c-style
-                                      color-theme-solarized
-                                      emojify
-                                      )
+   dotspacemacs-additional-packages '(solidity-mode graphql-mode google-c-style color-theme-solarized emojify editorconfig magic-latex-buffer)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -94,7 +91,7 @@ values."
    ;; `used-but-keep-unused' installs only the used packages but won't uninstall
    ;; them if they become unused. `all' installs *all* packages supported by
    ;; Spacemacs and never uninstall them. (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+   dotspacemacs-install-packages 'used-but-keep-unused))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -105,7 +102,26 @@ values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
+   ;; If non-nil then enable support for the portable dumper. You'll need
+   ;; to compile Emacs 27 from source following the instructions in file
+   ;; EXPERIMENTAL.org at to root of the git repository.
+   ;; (default nil)
+   dotspacemacs-enable-emacs-pdumper nil
+
+   ;; File path pointing to emacs 27.1 executable compiled with support
+   ;; for the portable dumper (this is currently the branch pdumper).
+   ;; (default "emacs-27.0.50")
+   dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
+
+   ;; Name of the Spacemacs dump file. This is the file will be created by the
+   ;; portable dumper in the cache directory under dumps sub-directory.
+   ;; To load it when starting Emacs add the parameter `--dump-file'
+   ;; when invoking Emacs 27.1 executable on the command line, for instance:
+   ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
+   ;; (default spacemacs.pdmp)
+   dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
+
+   ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
    ;; environment, otherwise it is strongly recommended to let it set to t.
    ;; This variable has no effect if Emacs is launched with the parameter
@@ -329,7 +345,7 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-  )
+ )
 
 (defun dotspacemacs/user-config ()
   ; solarized theme
@@ -382,7 +398,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
    web-mode-markup-indent-offset 2
    web-mode-css-indent-offset 2
    web-mode-code-indent-offset 2
-   web-mode-attr-indent-offset 2)
+   web-mode-attr-indent-offset 2
+   typescript-indent-level 2)
 
   (with-eval-after-load 'web-mode
      (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
@@ -494,6 +511,66 @@ before packages are loaded. If you are unsure, you should try in setting them in
           c-basic-offset 2))
 
   (add-hook 'after-init-hook 'global-emojify-mode)
+
+  ;; graphql for prisma
+  (add-to-list 'auto-mode-alist '("\\.prisma\\'" . graphql-mode))
+
+  (add-hook 'term-mode-hook
+            (defun my-term-mode-hook ()
+              (setq bidi-paragraph-direction 'left-to-right)))
+
+  ;; (add-to-list 'company-backends 'company-tern)
+;; term
+(defface term-color-black 
+  '((t (:foreground "#3f3f3f" :background "#272822"))) 
+  "Unhelpful docstring.")
+(defface term-color-red
+  '((t (:foreground "#cc9393" :background "#272822"))) 
+  "Unhelpful docstring.")
+(defface term-color-green
+  '((t (:foreground "#7f9f7f" :background "#272822"))) 
+  "Unhelpful docstring.")
+(defface term-color-yellow
+  '((t (:foreground "#f0dfaf" :background "#272822"))) 
+  "Unhelpful docstring.")
+(defface term-color-blue 
+  '((t (:foreground "#6d85ba" :background "#272822"))) 
+
+  "Unhelpful docstring.")
+(defface term-color-magenta 
+  '((t (:foreground "#dc8cc3" :background "#272822"))) 
+  "Unhelpful docstring.")
+(defface term-color-cyan
+  '((t (:foreground "#93e0e3" :background "#272822"))) 
+  "Unhelpful docstring.")
+(defface term-color-white
+  '((t (:foreground "#dcdccc" :background "#272822"))) 
+  "Unhelpful docstring.")
+'(term-default-fg-color ((t (:inherit term-color-white))))
+'(term-default-bg-color ((t (:inherit term-color-black))))
+
+;; ansi-term colors
+(setq ansi-term-color-vector
+  [term term-color-black term-color-red term-color-green term-color-yellow
+    term-color-blue term-color-magenta term-color-cyan term-color-white])
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
+;; setting light background for EIN mode
+(defun my-set-theme-on-mode ()
+  "set background color depending on file suffix"
+  (interactive)
+  (let ((fileNameSuffix (file-name-extension (buffer-file-name) ) ))
+    (cond
+     ((string= fileNameSuffix "ipynb" ) (set-background-color "honeydew"))
+     (t (message "%s" "no match found"))
+     )
+    ))
+
+(add-hook 'find-file-hook 'my-set-theme-on-mode)
 )
 
 
@@ -504,22 +581,89 @@ before packages are loaded. If you are unsure, you should try in setting them in
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(compilation-read-command nil)
- '(compile-command
-   "make -C /Users/knowledge/Developer/PhD/FESR/build/ -j4 default_target")
- '(org-agenda-files (quote ("~/todo.org")))
+ '(evil-want-Y-yank-to-eol nil)
+ ;; '(org-agenda-files (quote ("~/todo.org")))
  '(package-selected-packages
    (quote
-    (emojify ht color-theme-solarized color-theme treepy graphql reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl graphql-mode ein request-deferred deferred wolfram-mode tide typescript-mode yasnippet-snippets indium websocket seq company-auctex auctex-latexmk auctex solidity-mode yaml-mode google-c-style org-mime helm-spotify-plus phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode ranger web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data emoji-cheat-sheet-plus company-emoji fasd helm-dash dash-at-point csv-mode spotify helm-spotify multi yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic mmm-mode markdown-toc markdown-mode gh-md xterm-color smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download multi-term magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub let-alist with-editor eshell-z eshell-prompt-extras esh-help web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode flycheck-pos-tip pos-tip flycheck org-plus-contrib helm-company helm-c-yasnippet company-statistics company-c-headers auto-yasnippet ac-ispell fuzzy company yasnippet auto-complete disaster cmake-mode clang-format ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+    (dockerfile-mode docker tablist docker-tramp company-emacs-eclim eclim emojify ht color-theme-solarized color-theme treepy graphql reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl graphql-mode ein request-deferred deferred wolfram-mode tide typescript-mode yasnippet-snippets indium websocket seq company-auctex auctex-latexmk auctex solidity-mode yaml-mode google-c-style org-mime helm-spotify-plus phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode ranger web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data emoji-cheat-sheet-plus company-emoji fasd helm-dash dash-at-point csv-mode spotify helm-spotify multi yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic mmm-mode markdown-toc markdown-mode gh-md xterm-color smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download multi-term magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub let-alist with-editor eshell-z eshell-prompt-extras esh-help web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode flycheck-pos-tip pos-tip flycheck org-plus-contrib helm-company helm-c-yasnippet company-statistics company-c-headers auto-yasnippet ac-ispell fuzzy company yasnippet auto-complete disaster cmake-mode clang-format ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
  '(safe-local-variable-values
    (quote
-    ((projectile-project-run-cmd . "./build/FESR")
-     (projectile-project-run-cmd . "~/Developer/PhD/FESR/build/FESR")
-     (projectile-run-project . "~/Developer/PhD/FESR/build/FESR")
+    ((projectile-project-run-cmd . "python ./main.py")
+     (projectile-project-compilation-cmd . "make -C ./build -j8 default_target")
+     (projectile-project-test-cmd . "cd ./FESR && ./build/runUnitTests")
+     (projectile-project-run-cmd . "cd ./FESR && ./build/FESR")
+     (projectile-project-compilation-cmd . "cd ./FESR && make -C ./build/ -j8 default_target")
+     (projectile-project-test-cmd . "./FESR/build/runUnitTests")
+     (projectile-project-run-cmd . "./FESR/build/FESR")
+     (projectile-project-compilation-cmd . "make -C ./FESR/build/ -j8 default_target")
+     (projectile-project-compilation-cmd . "make -C ./build/ -j8 default_target")
+     (projectile-project-compilation-cmd . "make -C /Users/knowledge/Developer/PhD/FESR/build/ -j8 default_target")
+     (projectile-project-compilation-cmd . "make")
+     (projectile-project-test-cmd . "./build/runUnitTests")
+     (projectile-project-test-cmd . "./build/FESR")
+     (projectile-project-run-cmd . "./build/FESR")
      (helm-make-build-dir . "build/")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(cursor ((t (:background "#b58900"))))
+ '(helm-selection ((t (:foreground "white" :background "red" :inverse-video nil))))
+ '(mode-line ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
+ '(mode-line-inactive ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
+ '(powerline-active1 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
+ '(powerline-active2 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
+ '(powerline-inactive1 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
+ '(powerline-inactive2 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)))))
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(compilation-read-command nil)
+ '(evil-want-Y-yank-to-eol nil)
+ '(package-selected-packages
+   (quote
+    (doom-modeline centered-cursor-mode counsel swiper window-purpose ivy treemacs visual-fill-column dockerfile-mode docker tablist docker-tramp company-emacs-eclim eclim emojify ht color-theme-solarized color-theme treepy graphql reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl graphql-mode ein request-deferred deferred wolfram-mode tide typescript-mode yasnippet-snippets indium websocket seq company-auctex auctex-latexmk auctex solidity-mode yaml-mode google-c-style org-mime helm-spotify-plus phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode ranger web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data emoji-cheat-sheet-plus company-emoji fasd helm-dash dash-at-point csv-mode spotify helm-spotify multi yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic mmm-mode markdown-toc markdown-mode gh-md xterm-color smeargle shell-pop orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download multi-term magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link evil-magit magit magit-popup git-commit ghub let-alist with-editor eshell-z eshell-prompt-extras esh-help web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode flycheck-pos-tip pos-tip flycheck org-plus-contrib helm-company helm-c-yasnippet company-statistics company-c-headers auto-yasnippet ac-ispell fuzzy company yasnippet auto-complete disaster cmake-mode clang-format ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+ '(safe-local-variable-values
+   (quote
+    ((projectile-project-run-cmd . "python ./main.py")
+     (projectile-project-compilation-cmd . "make -C ./build -j8 default_target")
+     (projectile-project-test-cmd . "cd ./FESR && ./build/runUnitTests")
+     (projectile-project-run-cmd . "cd ./FESR && ./build/FESR")
+     (projectile-project-compilation-cmd . "cd ./FESR && make -C ./build/ -j8 default_target")
+     (projectile-project-test-cmd . "./FESR/build/runUnitTests")
+     (projectile-project-run-cmd . "./FESR/build/FESR")
+     (projectile-project-compilation-cmd . "make -C ./FESR/build/ -j8 default_target")
+     (projectile-project-compilation-cmd . "make -C ./build/ -j8 default_target")
+     (projectile-project-compilation-cmd . "make -C /Users/knowledge/Developer/PhD/FESR/build/ -j8 default_target")
+     (projectile-project-compilation-cmd . "make")
+     (projectile-project-test-cmd . "./build/runUnitTests")
+     (projectile-project-test-cmd . "./build/FESR")
+     (projectile-project-run-cmd . "./build/FESR")
+     (helm-make-build-dir . "build/")))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(cursor ((t (:background "#b58900"))))
+ '(helm-selection ((t (:foreground "white" :background "red" :inverse-video nil))))
+ '(mode-line ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
+ '(mode-line-inactive ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
+ '(powerline-active1 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
+ '(powerline-active2 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
+ '(powerline-inactive1 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
+ '(powerline-inactive2 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)))))
+)
