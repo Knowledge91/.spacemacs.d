@@ -33,6 +33,7 @@ values."
    '(
      bibtex
      docker
+     pdf
      octave
      typescript
      yaml
@@ -71,6 +72,7 @@ values."
      (latex :variables
             latex-build-command "LaTeX"
             latex-enable-auto-fill t)
+     spell-checking
      theming
      typescript
      ipython-notebook
@@ -558,19 +560,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   :ensure t
   :config
   (editorconfig-mode 1))
-
-;; setting light background for EIN mode
-(defun my-set-theme-on-mode ()
-  "set background color depending on file suffix"
-  (interactive)
-  (let ((fileNameSuffix (file-name-extension (buffer-file-name) ) ))
-    (cond
-     ((string= fileNameSuffix "ipynb" ) (set-background-color "honeydew"))
-     (t (message "%s" "no match found"))
-     )
-    ))
-
-(add-hook 'find-file-hook 'my-set-theme-on-mode)
 )
 
 
