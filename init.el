@@ -31,6 +31,9 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-sort-by-usage t)
      bibtex
      docker
      pdf
@@ -50,10 +53,11 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      helm
-     auto-completion
      ;; better-defaults
      emacs-lisp
-     c-c++
+     (c-c++ :variables
+            c-c++-default-mode-for-headers 'c++-mode
+            c-c++-enable-clang-support t)
      git
      ;; markdown
      org
@@ -81,7 +85,13 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(solidity-mode graphql-mode google-c-style color-theme-solarized emojify editorconfig magic-latex-buffer)
+   dotspacemacs-additional-packages '(solidity-mode
+                                      graphql-mode
+                                      google-c-style
+                                      color-theme-solarized
+                                      emojify
+                                      editorconfig
+                                      magic-latex-buffer)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -383,8 +393,12 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; solidity
   (require 'solidity-mode)
 
-  ;; latex
+  ;; LATEX ----------------------------------------------------------------------------------------
   (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+  ;; nomenclature
+  (eval-after-load "tex"
+    '(add-to-list 'TeX-command-list
+                  '("Nomenclature" "makeindex %s.nlo -s nomencl.ist -o %s.nls" TeX-run-command nil t :help "Create nomenclature file")))
 
   ;; Turn off js2 mode errors & warnings (we lean on eslint/standard)
   (setq js2-mode-show-parse-errors nil)
@@ -560,6 +574,23 @@ before packages are loaded. If you are unsure, you should try in setting them in
   :ensure t
   :config
   (editorconfig-mode 1))
+
+(autoload 'wolfram-mode "wolfram-mode" nil t) (autoload 'run-wolfram "wolfram-mode" nil t) (setq wolfram-program "/Applications/Mathematica.app/Contents/MacOS/MathKernel") (add-to-list 'auto-mode-alist '("\.m$" . wolfram-mode)) (setq wolfram-path "direcotry-in-Mathematica-$Path") ;; e.g. on Linux "~/.Mathematica/Applications"
+
+
+;; arduino c++ flycheck include headers
+(add-hook 'c++-mode-hook
+          (lambda () (setq flycheck-clang-include-path
+                           (list "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/eightanaloginputs"
+                                 "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/avr/include"
+                                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino"
+                                 "/Users/knowledge/Documents/Arduino/hardware/espressif/esp32/tools/sdk/include/esp32"
+                                 "/Users/knowledge/Documents/Arduino/hardware/espressif/esp32/tools/sdk/include/driver"
+                                 "/Users/knowledge/Documents/Arduino/hardware/espressif/esp32/tools/sdk/include/soc"
+                                 "/Users/knowledge/Documents/Arduino/hardware/espressif/esp32/tools/sdk/include/config"))))
+
+;; company-auctex
+
 )
 
 
